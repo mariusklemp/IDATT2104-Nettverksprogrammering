@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title> WebSocket</title>
+</head>
+
+<body>
+WebSocket test page
+<br/>
+<label>Skriv melding:</label>
+<input type="text" id="message" name="message"><br><br>
+<input type="submit" value="Submit" onclick="return onClickSubmit();">
+
+<div id="chat" class="div">
+</div>
+
+<script>
+    const ws = new WebSocket('ws://localhost:3000');
+
+    ws.addEventListener('open', () => {
+        console.log('[Client] Connection to WebSocket server was opened.');
+        ws.send('Hello, this is a message from client');
+    });
+
+    ws.addEventListener('message', (e) => {
+        console.log('[Client] Message received: ' + e.data);
+        document.getElementById("chat").innerHTML = document.getElementById("chat").innerHTML + "<br> Friend: " + e.data;
+    });
+
+    ws.addEventListener('close', () => {
+        console.log('[Client] Connection closed.');
+
+    });
+    ws.onerror = (err) => {
+        if(err.code === 'EHOSTDOWN'){
+            console.log('[Client] Error: server down.');
+        }
+    };
+
+    const onClickSubmit = () => {
+        let message = document.getElementById("message").value
+        document.getElementById("chat").innerHTML = document.getElementById("chat").innerHTML + "</br> You: " + message;
+        ws.send(message);
+    }
+</script>
+<style>
+    .div {
+        border: 1px solid black;
+        width: 500px;
+        height: auto;
+        margin-top: 10px;
+    }
+</style>
+</body>
+</html>
